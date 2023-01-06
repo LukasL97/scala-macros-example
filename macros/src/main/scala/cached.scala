@@ -21,20 +21,22 @@ object cached {
           case q"$_ val $name: $tpt = $_" => name -> tpt
         }.unzip
 
-        val cacheName = TermName(method + "_generatedCache_" + rhs.pos.hashCode())
+        val cacheName = TermName(c.freshName(method + "_generatedCache"))
+        val keyName = TermName(c.freshName("key"))
+        val resultName = TermName(c.freshName("result"))
 
         val newRhs =
           q"""
-           val key = (..$paramNames)
-           $cacheName.get(key) match {
+           val $keyName = (..$paramNames)
+           $cacheName.get($keyName) match {
              case Some(value) =>
                println("CACHE HIT")
                value
              case None =>
                println("CACHE MISS")
-               val result = $rhs
-               $cacheName.put(key, result)
-               result
+               val $resultName = $rhs
+               $cacheName.put($keyName, $resultName)
+               $resultName
            }
           """
         val expandedMethod = q"$mods def $method[..$typeParams](...$params): $returnType = $newRhs"
