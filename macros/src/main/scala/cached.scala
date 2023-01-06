@@ -26,7 +26,7 @@ object cached {
         val newRhs =
           q"""
            val key = (..$paramNames)
-           return $cacheName.get(key) match {
+           $cacheName.get(key) match {
              case Some(value) =>
                println("CACHE HIT")
                value
@@ -34,7 +34,7 @@ object cached {
                println("CACHE MISS")
                val result = $rhs
                $cacheName.put(key, result)
-               return result
+               result
            }
           """
         val expandedMethod = q"$mods def $method[..$typeParams](...$params): $returnType = $newRhs"
