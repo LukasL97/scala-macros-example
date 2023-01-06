@@ -13,3 +13,7 @@ class MapCache[K, V] extends Cache[K, V] {
   override def put(key: K, value: V): Option[V] = map.put(key, value)
   override def get(key: K): Option[V] = map.get(key)
 }
+
+object Cache {
+  implicit def defaultCacheFactory[K, V]: Cache[K, V] = new MapCache[K, V]
+}

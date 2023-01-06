@@ -42,7 +42,7 @@ object cached {
         val expandedMethod = q"$mods def $method[..$typeParams](...$params): $returnType = $newRhs"
 
         val cacheKeyType = tq"(..$paramTypes)"
-        val cache = q"private val $cacheName: de.codecentric.Cache[$cacheKeyType, $returnType] = new de.codecentric.MapCache[$cacheKeyType, $returnType]"
+        val cache = q"private val $cacheName: de.codecentric.Cache[$cacheKeyType, $returnType] = implicitly[de.codecentric.Cache[$cacheKeyType, $returnType]]"
 
         q"$expandedMethod; $cache"
       case annottee => c.abort(annottee.pos, "Annottee must be a method")
