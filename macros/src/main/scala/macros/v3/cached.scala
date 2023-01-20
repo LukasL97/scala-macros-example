@@ -1,4 +1,5 @@
 package de.codecentric
+package macros.v3
 
 import scala.annotation.StaticAnnotation
 import scala.language.experimental.macros
@@ -30,10 +31,10 @@ object cached {
            val $keyName = (..$paramNames)
            $cacheName.get($keyName) match {
              case Some(value) =>
-               println("CACHE HIT")
+               println("CACHE HIT for key " + $keyName + ": " + value)
                value
              case None =>
-               println("CACHE MISS")
+               println("CACHE MISS for key " + $keyName)
                val $resultName = $rhs
                $cacheName.put($keyName, $resultName)
                $resultName
