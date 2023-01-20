@@ -22,7 +22,10 @@ lazy val examples = (project in file("examples"))
   .settings(
     name := "examples",
     idePackagePrefix := Some("de.codecentric"),
-    scalacOptions := Seq("-Ymacro-annotations")
+    scalacOptions := Seq("-Ymacro-annotations"),
+    libraryDependencies := Seq(
+      "com.google.guava" % "guava" % "31.1-jre"
+    )
   )
   .dependsOn(macros)
 

@@ -3,7 +3,13 @@ package examples.macros.v3
 
 import macros.v3.cached
 
+import com.google.common.cache.CacheBuilder
+
+import java.util.concurrent.TimeUnit
+
 object CachedExample extends App {
+
+  implicit def guavaCacheFactory[K, V]: Cache[K, V] = new GuavaCache
 
   @cached
   def f(x: Int, y: Int): Int = x * y
@@ -17,4 +23,21 @@ object CachedExample extends App {
 
   println(g(3, "x"))
   println(g(3, "x"))
+}
+
+class GuavaCache[K, V] extends Cache[K, V] {
+
+  println("Initialize GuavaCache")
+
+  private val cache = CacheBuilder.newBuilder()
+    .maximumSize(1000)
+    .expireAfterAccess(5, TimeUnit.MINUTES)
+    .build[K, V]
+  override def put(key: K, value: V): Option[V] = {
+    val oldValue = get(key)
+    cache.put(key, value)
+    oldValue
+  }
+
+  override def get(key: K): Option[V] = Option(cache.getIfPresent(key))
 }
