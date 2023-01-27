@@ -33,6 +33,7 @@ class GuavaCache[K, V] extends Cache[K, V] {
     .maximumSize(1000)
     .expireAfterAccess(5, TimeUnit.MINUTES)
     .build[K, V]
+
   override def put(key: K, value: V): Option[V] = {
     val oldValue = get(key)
     cache.put(key, value)

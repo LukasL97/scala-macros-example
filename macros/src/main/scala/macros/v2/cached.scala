@@ -46,6 +46,7 @@ object cached {
         val cache = q"private val $cacheName: de.codecentric.Cache[$cacheKeyType, $returnType] = new de.codecentric.MapCache[$cacheKeyType, $returnType]"
 
         q"$expandedMethod; $cache"
+
       case annottee => c.abort(annottee.pos, "Annottee must be a method")
     }
   }

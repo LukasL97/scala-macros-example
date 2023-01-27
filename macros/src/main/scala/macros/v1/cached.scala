@@ -42,7 +42,8 @@ object cached {
           """
         val expandedMethod = q"$mods def $method[..$typeParams](...$params): $returnType = $newRhs"
 
-        q"$expandedMethod"
+        expandedMethod
+
       case annottee => c.abort(annottee.pos, "Annottee must be a method")
     }
   }
