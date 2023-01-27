@@ -40,10 +40,15 @@ object cached {
                $resultName
            }
           """
-        val expandedMethod = q"$mods def $method[..$typeParams](...$params): $returnType = $newRhs"
+        val expandedMethod =
+          q"$mods def $method[..$typeParams](...$params): $returnType = $newRhs"
 
         val cacheKeyType = tq"(..$paramTypes)"
-        val cache = q"private val $cacheName: de.codecentric.Cache[$cacheKeyType, $returnType] = new de.codecentric.MapCache[$cacheKeyType, $returnType]"
+        val cache =
+          q"""
+           private val $cacheName: de.codecentric.Cache[$cacheKeyType, $returnType] =
+             new de.codecentric.MapCache[$cacheKeyType, $returnType]
+          """
 
         q"$expandedMethod; $cache"
 

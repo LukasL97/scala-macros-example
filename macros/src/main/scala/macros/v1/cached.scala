@@ -40,7 +40,8 @@ object cached {
                $resultName
            }
           """
-        val expandedMethod = q"$mods def $method[..$typeParams](...$params): $returnType = $newRhs"
+        val expandedMethod =
+          q"$mods def $method[..$typeParams](...$params): $returnType = $newRhs"
 
         expandedMethod
 
