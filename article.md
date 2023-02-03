@@ -290,10 +290,21 @@ class GuavaCache[K, V] extends Cache[K, V] {
 Now, we would like to be able to use different Cache implementations with the `@cached` annotation without having to
 touch the macro transformation for each one.
 An easy way to achieve that, is by resolving the cache implementation from the implicit scope.
-For that, we define an implicit factory method, that creates a new `GuavaCache`:
+First, we provide a `CacheFactory` that offers an `apply` method producing a `Cache`:
+
+```scala 
+trait CacheFactory {
+  def apply[K, V](): Cache[K, V]
+}
+```
+
+An example implementation using the previously defined GuavaCache would look as follows.
+It is defined as implicit object in order to allow the generated code to resolve it:
 
 ```scala
-implicit def guavaCacheFactory[K, V]: Cache[K, V] = new GuavaCache
+implicit object GuavaCacheFactory extends CacheFactory {
+  override def apply[K, V](): Cache[K, V] = new GuavaCache[K, V]
+}
 ```
 
 In the generated code, we replace the explicit creation of a `MapCache` with a call of Scala's `implicitly` method,
@@ -303,7 +314,7 @@ which receives the cache type including key and value type as type parameter:
 val cache =
   q"""
    private val $cacheName: de.codecentric.Cache[$cacheKeyType, $returnType] = 
-     implicitly[de.codecentric.Cache[$cacheKeyType, $returnType]]
+     implicitly[de.codecentric.CacheFactory].apply[$cacheKeyType, $returnType]()
   """
 ```
 
