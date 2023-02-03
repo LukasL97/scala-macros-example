@@ -2,6 +2,8 @@
 
 TODO: introduction / motivation
 
+TODO: explain why we don't use Scala 3 (i.e. no macro annotations in Scala 3, sadly)
+
 ## Types of Macros
 
 ### Def Macros
@@ -12,7 +14,8 @@ TODO: introduction / motivation
 
 As a simple example for macros in Scala we will implement a macro annotation for caching return values of arbitrary methods.
 The cache will store key-value pairs of the input parameters of the method and its return value and allows the method to
-reuse results of previous inputs. To this end we define a `Cache` trait with a simple `MapCache` implementation:
+reuse results of previous inputs. 
+To this end, we define a `Cache` trait with a simple `MapCache` implementation:
 
 ```scala
 trait Cache[K, V] {
@@ -70,7 +73,7 @@ This will no longer be necessary when we replace the `cached` method with a macr
 
 ### Generating the Caching Logic
 
-We introduce a `cached` macro annotation which can be used to annotate a method of arbitrary signature, providing all
+We introduce a `cached` macro annotation, which can be used to annotate a method of arbitrary signature, providing all
 the required caching logic.
 In the first step, we only implement the transformation of the annotated method itself. 
 For now, the cache that is used by the annotated method still has to be defined in the application code. 
@@ -99,7 +102,7 @@ The context provides access to Scala's reflection API, including features such a
 will make use of in the transformation code. We can import those directly as `import c.universe._`.
 
 Now, let's have a look at the implementation of the macro transformation. 
-This may seem overwhelming at first, but we will give a step-by-step explanation below.
+This may seem overwhelming at first, but we will give a step-by-step explanation below:
 
 ```scala
 def impl(c: whitebox.Context)(annottees: c.Tree*): c.Tree = {
@@ -193,7 +196,7 @@ def g(x: Int, s: String): String = x.toString + s
 
 Now that we have simplified the method body by implementing the `cached` macro annotation, we also want to get rid
 of the explicit cache definitions. 
-In order to achieve, we need to not only transform a definition, as we already do, but generate an entirely new
+In order to achieve that, we need to not only transform a definition, as we already do, but generate an entirely new
 definition as well, namely the cache.
 Luckily, macro annotations allow us to expand an annottee in as many ASTs as we want.
 This allows us to expand the annotated method in both the transformed method and an additional value definition for
@@ -219,9 +222,9 @@ def impl(c: whitebox.Context)(annottees: c.Tree*): c.Tree = {
         q"$mods def $method[..$typeParams](...$params): $returnType = $newRhs"
 
       val cacheKeyType = tq"(..$paramTypes)"                                           // (3)
-      val cache =
+      val cache =                                                                      // (4)
         q"""
-         private val $cacheName: de.codecentric.Cache[$cacheKeyType, $returnType] =    // (4)
+         private val $cacheName: de.codecentric.Cache[$cacheKeyType, $returnType] =    
            new de.codecentric.MapCache[$cacheKeyType, $returnType]
          """
 
@@ -266,7 +269,7 @@ def g(x: Int, s: String): String = x.toString + s
 So far we have used a simple `MapCache` implementation for the caches. 
 In a real-world example, one would rather use a more advanced caching solution, which provides features such as a
 size limit and expiration.
-For example, we could use a cache implementation based on *Guava*, that we would implement our previously defined
+For example, we could use a cache implementation based on *Guava*, that would implement our previously defined
 `Cache` trait:
 
 ```scala
@@ -308,7 +311,8 @@ implicit object GuavaCacheFactory extends CacheFactory {
 ```
 
 In the generated code, we replace the explicit creation of a `MapCache` with a call of Scala's `implicitly` method,
-which receives the cache type including key and value type as type parameter:
+which receives the `CacheFactory` as type parameter.
+The `apply` method is called on the resolved `CacheFactory`, yielding a `Cache` of the appropriate key and value type:
 
 ```scala
 val cache =
@@ -318,7 +322,7 @@ val cache =
   """
 ```
 
-During implicit resolution, the compiler will look for an implicit definition that fits the required type and thereby
-find the `guavaCacheFactory`.
+During implicit resolution, the compiler will look for an implicit definition that fits the required `CacheFactory` type and thereby
+find the `GuavaCacheFactory`.
 
 ## Conclusion
