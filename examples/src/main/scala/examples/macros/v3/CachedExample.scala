@@ -9,7 +9,9 @@ import java.util.concurrent.TimeUnit
 
 object CachedExample extends App {
 
-  implicit def guavaCacheFactory[K, V]: Cache[K, V] = new GuavaCache
+  implicit val guavaCacheFactory: CacheFactory = new CacheFactory {
+    override def apply[K, V](): Cache[K, V] = new GuavaCache[K, V]
+  }
 
   @cached
   def f(x: Int, y: Int): Int = x * y

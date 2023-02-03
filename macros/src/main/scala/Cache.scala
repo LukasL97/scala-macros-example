@@ -15,5 +15,11 @@ class MapCache[K, V] extends Cache[K, V] {
 }
 
 object Cache {
-  implicit def defaultCacheFactory[K, V]: Cache[K, V] = new MapCache[K, V]
+  implicit val defaultCacheFactory: CacheFactory = new CacheFactory {
+    override def apply[K, V](): Cache[K, V] = new MapCache[K, V]
+  }
+}
+
+trait CacheFactory {
+  def apply[K, V](): Cache[K, V]
 }

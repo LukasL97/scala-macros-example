@@ -47,7 +47,7 @@ object cached {
         val cache =
           q"""
            private val $cacheName: de.codecentric.Cache[$cacheKeyType, $returnType] =
-             implicitly[de.codecentric.Cache[$cacheKeyType, $returnType]]
+             implicitly[de.codecentric.CacheFactory].apply[$cacheKeyType, $returnType]()
           """
 
         q"$expandedMethod; $cache"
