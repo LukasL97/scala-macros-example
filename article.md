@@ -36,7 +36,7 @@ class MapCache[K, V] extends Cache[K, V] {
 }
 ```
 
-Before introducing the macro annotation, we first want to have a look on how an implementation without macros could look like.
+Before introducing the macro annotation, we first want to have a look at how an implementation without macros could look like.
 The caching logic can be generalized into a method with type parameters `K` and `V` for the key and value types:
 
 ```scala
@@ -161,7 +161,7 @@ Meanwhile, the `...$params` notation indicates a nested list of lists of trees, 
 of the annotated method.
 
 The pattern matching ensures, that the annottee is indeed a method.
-Otherwise, we jump to the default case (6), where we abort compilation with a respective error message.
+Otherwise, we jump to the default case (6), where we abort compilation with a corresponding error message.
 
 In (2), we extract the names from the parameters, which we will use in the transformed right-hand side of the method
 to build the key that is looked up and stored in the cache. 
