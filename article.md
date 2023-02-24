@@ -246,7 +246,7 @@ def impl(c: whitebox.Context)(annottees: c.Tree*): c.Tree = {
 ```
 
 In (1) we extract the types of the method parameters, which we then use in (3) to define the key type of the cache.
-The string interpolation `tq(..$paramTypes)` is used to build a tuple type of the `paramTypes`. 
+The interpolator `tq"(..$paramTypes)"` is used to build a tuple type of the `paramTypes`. 
 The `tq"..."` notation is similar to `q"..."`, which we learned previously, with the difference that the latter is used
 to build expression trees, while the former is used for type trees.
 
@@ -335,7 +335,7 @@ val cache =
 During implicit resolution, the compiler will look for an implicit definition that fits the required `CacheFactory` type and thereby
 find the `GuavaCacheFactory`.
 
-## Transferring the implementation to Scala 3
+## Transferring the Implementation to Scala 3
 
 Macro annotations have only recently been added to Scala 3 in the pre-release version 3.3.0-RC2 of the Dotty compiler.
 They differ from Scala 2 macro annotations with regard to when they are expanded during compilation.
@@ -344,7 +344,7 @@ after type-checking.
 This decision was made intentionally by the language designers, in order to ensure safety and robustness and
 improve IDE support. [[2]](https://www.scala-lang.org/blog/2018/04/30/in-a-nutshell.html)
 
-However, this decision makes the implementation of Scala 3 macro annotations currently more difficult.
+However, this decision makes the implementation of Scala 3 macro annotations currently more verbose.
 In Scala 2, we could mostly write Scala code in quasiquotes and use it as output of our macro implementation.
 Meanwhile, in Scala 3, we additionally have to take care of symbols, unique identifiers of definitions,
 which especially makes adding new members to a class more complicated than in Scala 2.
@@ -464,7 +464,7 @@ It has to be noted, that we did not use fresh names for the `key` and `result` d
 method body.
 This would of course still be possible and require a similar approach as with the `cacheRef`, creating
 a new symbol for each and then references to the symbols, which can then be used inside the quoted code block.
-For simplicity, this is omitted here and we confine ourselves to using the static names `key` and `result`,
+For simplicity, this is omitted here, and we confine ourselves to using the static names `key` and `result`,
 which could potentially have naming conflicts to method parameters.
 
 Finally, in (7) we create the `expandedMethod` as a copy of the input method, replacing the original
@@ -473,7 +473,22 @@ Then, we return it alongside the `cache`.
 
 ## Conclusion
 
-TODO: outlook on more advanced use cases (EDSLs etc.) with examples
+Using the caching example, we have seen how macro annotations can be used in both Scala 2 and Scala 3 to generate code
+at compile time.
+The `cached` annotation can be reused and is independent of the signature of the method it is applied to.
+Also, we bypass the overhead of defining a cache for every method whose return values we want to cache,
+by generating it as new definition for every annotated method.
+
+While macro annotations provide an interesting way to use metaprogramming in Scala, they also are somewhat clumsy to use
+in practice, especially with regard to IDE support, which is not always working properly.
+Taking IntelliJ IDEA using the Scala plugin as an example, the IDE is often unable to infer the type of calls to the
+reflection API properly.
+This is still an issue in Scala 3, at least at the moment.
+However, with macro annotations just having been added as experimental feature to Scala 3, there is some hope that
+this might change in the future.
+Quasiquotes in Scala 2 are also somewhat difficult to work with, as they are essentially just strings containing
+Scala code, which are not type-checked in any form by the IDE plugin.
+In this regard, quotes in Scala 3 are an improvement, as they are actually interpreted as Scala code by the IDE.
 
 ## References
 
