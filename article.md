@@ -24,8 +24,10 @@ to a (mostly) equivalent implementation in Scala 3.
 
 As a simple example for macros in Scala 2 (version 2.13.10), we will implement a macro annotation for caching return values of arbitrary methods.
 The cache will store key-value pairs of the input parameters of the method and its return value and allows the method to
-reuse results of previous inputs. 
-To this end, we define a `Cache` trait with a simple `MapCache` implementation:
+reuse results of previous inputs.
+The code we will see in the following can be found [here](https://github.com/LukasL97/scala-3-macros-example).
+
+We start by defining a `Cache` trait with a simple `MapCache` implementation:
 
 ```scala
 trait Cache[K, V] {
@@ -356,7 +358,7 @@ An `implicitly` in macro code will not be resolved from an implicit (or `given`)
 With this in mind, let's have a look at the implementation of the `cached` macro annotation in Scala 3.
 The implementation transforms the annotated method and adds a new definition for the cache.
 However, it does not make the cache implementation configurable as the last stage of our `cached` annotation in
-Scala 2, due to the limitation mentioned earlier.
+Scala 2, due to the limitation mentioned earlier. The code for the Scala 3 macro annotation can be found [here](https://github.com/LukasL97/scala-3-macros-example).
 
 ```scala
 @experimental
