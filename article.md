@@ -1,4 +1,4 @@
-# Compile-time Code Generation with Scala Macro Annotations
+# Compile-time code generation with Scala macro annotations
 
 In this blog post we will take a look at macro annotations, a powerful tool for code transformation and generation in Scala.
 Macro annotations allow us to transform the code of a definition, e.g., a class or method, at compile time.
@@ -20,7 +20,7 @@ Compared to Scala 2, their usage is still somewhat clumsy.
 Hence, we will first have a look at macro annotations in Scala 2 and then compare the example
 to a (mostly) equivalent implementation in Scala 3.
 
-## Caching Method Return Values with Macro Annotations in Scala 2
+## Caching method return values with macro annotations in Scala 2
 
 As a simple example for macros in Scala 2 (version 2.13.10), we will implement a macro annotation for caching return values of arbitrary methods.
 The cache will store key-value pairs of the input parameters of the method and its return value and allows the method to
@@ -83,7 +83,7 @@ The generic `cached` method already provides some simplification for implementin
 However, we still have to define a cache for each method and pass it along with the input parameters to the `cached` method.
 This will no longer be necessary when we replace the `cached` method with a macro annotation.
 
-### Generating the Caching Logic
+### Generating the caching logic
 
 We introduce a `cached` macro annotation, which can be used to annotate a method of arbitrary signature, providing all
 the required caching logic.
@@ -204,7 +204,7 @@ val gCache = new MapCache[(Int, String), String]
 def g(x: Int, s: String): String = x.toString + s
 ```
 
-### Generating Caches at Compile Time
+### Generating caches at compile time
 
 Now that we have simplified the method body by implementing the `cached` macro annotation, we also want to get rid
 of the explicit cache definitions. 
@@ -276,7 +276,7 @@ def f(x: Int, y: Int): Int = x * y
 def g(x: Int, s: String): String = x.toString + s
 ```
 
-### Custom Cache Implementations from Implicit Cache Factories
+### Custom cache implementations from implicit cache factories
 
 So far we have used a simple `MapCache` implementation for the caches. 
 In a real-world example, one would rather use a more advanced caching solution, which provides features such as a
@@ -337,7 +337,7 @@ val cache =
 During implicit resolution, the compiler will look for an implicit definition that fits the required `CacheFactory` type and thereby
 find the `GuavaCacheFactory`.
 
-## Transferring the Implementation to Scala 3
+## Transferring the implementation to Scala 3
 
 Macro annotations have only recently been added to Scala 3 in the pre-release version 3.3.0-RC2 of the Dotty compiler.
 They differ from Scala 2 macro annotations with regard to when they are expanded during compilation.
