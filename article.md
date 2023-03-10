@@ -313,10 +313,10 @@ trait CacheFactory {
 ```
 
 An example implementation using the previously defined GuavaCache would look as follows.
-It is defined as implicit object in order to allow the generated code to resolve it:
+It is defined as implicit value in order to allow the generated code to resolve it:
 
 ```scala
-implicit object GuavaCacheFactory extends CacheFactory {
+implicit val guavaCacheFactory: CacheFactory = new CacheFactory {
   override def apply[K, V](): Cache[K, V] = new GuavaCache[K, V]
 }
 ```
@@ -334,7 +334,7 @@ val cache =
 ```
 
 During implicit resolution, the compiler will look for an implicit definition that fits the required `CacheFactory` type and thereby
-find the `GuavaCacheFactory`.
+find the `guavaCacheFactory`.
 
 ## Transferring the implementation to Scala 3
 
