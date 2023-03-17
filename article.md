@@ -113,17 +113,18 @@ def impl(c: whitebox.Context)(annottees: c.Tree*): c.Tree = {
   import c.universe._
 
   annottees.head match {
-    case q"$mods def $method[..$typeParams](...$params): $returnType = $rhs" =>        // (1)
+    case q"""$mods def $method[..$typeParams](
+      ...$params): $returnType = $rhs""" =>                        // (1)
 
       val paramNames = params.flatten.map {                                            
-        case q"$_ val $name: $_ = $_" => name                                          // (2)
+        case q"$_ val $name: $_ = $_" => name                      // (2)
       }
 
-      val cacheName = TermName(s"${method}Cache")                                      // (3)
+      val cacheName = TermName(s"${method}Cache")                  // (3)
       val keyName = TermName(c.freshName("key"))
       val resultName = TermName(c.freshName("result"))
 
-      val newRhs =                                                                     // (4)
+      val newRhs =                                                 // (4)
         q"""
          val $keyName = (..$paramNames)
          $cacheName.get($keyName) match {
@@ -135,12 +136,13 @@ def impl(c: whitebox.Context)(annottees: c.Tree*): c.Tree = {
              $resultName
          }
         """
-      val expandedMethod =                                                             // (5)
-        q"$mods def $method[..$typeParams](...$params): $returnType = $newRhs"
+      val expandedMethod = q"""$mods def $method[..$typeParams](                                                            
+        ...$params): $returnType = $newRhs"""                      // (5)
 
       expandedMethod
 
-    case annottee => c.abort(annottee.pos, "Annottee must be a method")                // (6)
+    case annottee => 
+      c.abort(annottee.pos, "Annottee must be a method")           // (6)
   }
 }
 ```
@@ -211,30 +213,33 @@ def impl(c: whitebox.Context)(annottees: c.Tree*): c.Tree = {
   import c.universe._
 
   annottees.head match {
-    case q"$mods def $method[..$typeParams](...$params): $returnType = $rhs" =>
+    case q"""$mods def $method[..$typeParams](
+      ...$params): $returnType = $rhs""" =>
 
       val (paramNames, paramTypes) = params.flatten.map {
-        case q"$_ val $name: $tpt = $_" => name -> tpt                                 // (1)
+        case q"$_ val $name: $tpt = $_" => name -> tpt             // (1)
       }.unzip
 
-      val cacheName = TermName(c.freshName(method + "_generatedCache"))                // (2)
+      val cacheName =                                              // (2)
+        TermName(c.freshName(method + "_generatedCache"))
       val keyName = TermName(c.freshName("key"))
       val resultName = TermName(c.freshName("result"))
 
-      val newRhs =...
-      val expandedMethod =
-        q"$mods def $method[..$typeParams](...$params): $returnType = $newRhs"
+      val newRhs = ...
+      val expandedMethod = q"""$mods def $method[..$typeParams](
+        ...$params): $returnType = $newRhs"""
 
-      val cacheKeyType = tq"(..$paramTypes)"                                           // (3)
-      val cache =                                                                      // (4)
+      val cacheKeyType = tq"(..$paramTypes)"                       // (3)
+      val cache =                                                  // (4)
         q"""
-         private val $cacheName: de.codecentric.Cache[$cacheKeyType, $returnType] =    
-           new de.codecentric.MapCache[$cacheKeyType, $returnType]
+         private val $cacheName: Cache[$cacheKeyType, $returnType] =    
+           new MapCache[$cacheKeyType, $returnType]
          """
 
-      q"$expandedMethod; $cache"                                                       // (5)
+      q"$expandedMethod; $cache"                                   // (5)
 
-    case annottee => c.abort(annottee.pos, "Annottee must be a method")
+    case annottee => 
+      c.abort(annottee.pos, "Annottee must be a method")
   }
 }
 ```
@@ -321,8 +326,8 @@ The `apply` method is called on the resolved `CacheFactory`, yielding a `Cache` 
 ```scala
 val cache =
   q"""
-   private val $cacheName: de.codecentric.Cache[$cacheKeyType, $returnType] = 
-     implicitly[de.codecentric.CacheFactory].apply[$cacheKeyType, $returnType]()
+   private val $cacheName: Cache[$cacheKeyType, $returnType] = 
+     implicitly[CacheFactory].apply[$cacheKeyType, $returnType]()
   """
 ```
 
