@@ -183,7 +183,7 @@ with `newRhs`. This method definition will replace the annotated method during c
 
 With this in place, we can annotate arbitrary methods as `@cached`. 
 The compiler will then transform each method according to the macro transformation defined above.
-The application code now looks as follows, still requiring the manual definition of the `fCache` and `gCache` for
+The application code now looks as follows, still requiring the explicit definition of the `fCache` and `gCache` for
 the two methods `f` and `g`, but already the method definitions themselves are simplified:
 
 ```scala
@@ -204,8 +204,8 @@ Now that we have simplified the method body by implementing the `cached` macro a
 of the explicit `Cache` instance definitions.
 In order to achieve that, we need to not only transform a definition, but generate an entirely new
 definition as well, namely the cache.
-Luckily, macro annotations allow us to expand an annottee in as many ASTs as we want.
-This allows us to expand the annotated method in both the transformed method and an additional value definition for
+Luckily, macro annotations allow us to expand an annottee into as many ASTs as we want.
+This allows us to expand the annotated method into both the transformed method and an additional value definition for
 the cache. The `impl` method of the macro annotation is adapted as follows:
 
 ```scala
@@ -336,13 +336,13 @@ find the `guavaCacheFactory`.
 
 ## Conclusion
 
-Using the caching example, we have seen how macro annotations can be used in both Scala 2 to generate code
+Using the caching example, we have seen how macro annotations can be used in Scala 2 to generate code
 at compile time.
 The `cached` annotation can be reused and is independent of the signature of the method it is applied to.
 Also, we bypass the overhead of defining a cache for every method whose return values we want to cache,
-by generating it as new definition for every annotated method.
+by generating it as a new definition for every annotated method.
 
-While macro annotations provide an interesting way to use metaprogramming in Scala, they also are somewhat clumsy to use
+While macro annotations provide an interesting way to use metaprogramming in Scala, they are also somewhat clumsy to use
 in practice, especially with regard to IDE support, which is not always working properly.
 Taking IntelliJ IDEA using the Scala plugin as an example, the IDE is often unable to infer the type of calls to the
 reflection API properly.
